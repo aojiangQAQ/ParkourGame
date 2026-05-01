@@ -1,0 +1,10 @@
+name: ParkourGame
+version: 1.0
+author: SGly
+main: com.sgly.aojiang.parkourgame.ParkourGame
+api-version: 1.16
+commands:
+  pk:
+    description: Primary command for managing parkour courses
+    usage: /pk <command>
+    aliases: [parkour]
