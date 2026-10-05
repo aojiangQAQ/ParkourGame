@@ -1,112 +1,63 @@
-# ParkourGame - 跑酷小游戏插件
+# ParkourGame
 
-![Minecraft](https://img.shields.io/badge/Minecraft-1.16%2B-green)
-![Spigot/Paper](https://img.shields.io/badge/Spigot%2FPaper-Compatible-blue)
-![License](https://img.shields.io/badge/license-MIT-blue)
+Minecraft 跑酷小游戏插件，可设置多条路线的起点、终点和检查点，在 Action Bar 显示用时。
 
-> **ParkourGame** 是一个为 Minecraft 服务器设计的跑酷小游戏插件。支持创建多条跑酷路线，含检查点系统、实时计时和自动背包管理，为玩家提供流畅的跑酷体验。
+作者：**aojiangQAQ（鳌江）**。
 
----
+## 环境
 
-## ✨ 功能亮点
+- 编译依赖：Spigot API `1.16.5-R0.1-SNAPSHOT`。
+- 插件声明的 API 版本：`1.16`。
+- Java 源码和字节码目标：Java 8。
+- 构建工具：仓库内的 Gradle Wrapper `8.7`，建议使用 JDK 17 构建。
 
-- **多路线管理**  
-  支持创建多条独立跑酷路线，每条路线拥有独立的起点、终点和多个检查点
+## 构建与安装
 
-- **实时计时系统**  
-  通过 Action Bar 实时显示跑酷用时，精确到毫秒
-
-- **检查点机制**  
-  踩踏轻质测重压力板自动触发，到达检查点时播放音效和粒子特效
-
-- **背包管理系统**  
-  跑酷开始时自动保存玩家背包，跑酷结束后自动恢复  
-  跑酷期间提供羽毛（返回检查点）和屏障（退出跑酷）快捷工具
-
-- **安全退出保护**  
-  玩家退出服务器时自动清理跑酷状态，防止数据异常
-
----
-
-## 📂 目录结构
-
-```
-ParkourGame/
-├── build.gradle
-├── settings.gradle
-├── README.md
-├── LICENSE
-├── .gitignore
-└── src/
-    └── main/
-        ├── java/
-        │   └── com/shuguangteam/parkourgame/...
-        └── resources/
-            └── plugin.yml
-```
-
----
-
-## 🛠 本地构建
-
-确保使用 **JDK 8+**：
-
-```bash
-# 克隆仓库
+```powershell
 git clone https://github.com/aojiangQAQ/ParkourGame.git
 cd ParkourGame
-
-# Gradle 打包
-./gradlew build
-
-# 生成 build/libs/ParkourGame-1.0.jar
+.\gradlew.bat build
 ```
 
----
+Linux/macOS 使用 `./gradlew build`。产物为 `build/libs/ParkourGame-1.0.jar`。
 
-## 🚀 安装与配置
+将 JAR 放入服务端 `plugins/` 目录后重启服务器。当前版本不生成配置文件，路线和玩家状态只保存在内存中，重启后需重新设置路线。
 
-1. 将 `ParkourGame-1.0.jar` 复制到服务器 `plugins/` 目录
-2. 启动或重载服务器，插件会自动生成配置文件
-3. 使用指令创建跑酷路线（详见下方指令列表）
+## 命令
 
----
+`/parkour` 是 `/pk` 的别名。全部命令只能由玩家执行。
 
-## 📝 指令 & 权限
+| 命令 | 说明 |
+|---|---|
+| `/pk create <名称> s` | 设置路线起点 |
+| `/pk create <名称> e` | 设置路线终点，需先设置起点 |
+| `/pk create <名称> cp <编号>` | 添加检查点，需先设置起点与终点，编号为正整数 |
+| `/pk list` | 列出路线 |
+| `/pk tp <名称>` | 传送到路线起点 |
+| `/pk help` | 显示命令帮助 |
+| `/pk reload` | 保留命令；当前只返回重载提示，不读取配置或保存路线 |
 
-| 指令 | 别名 | 说明 | 权限 |
-|------|------|------|----------|
-| `/pk create <名称> <s\|e\|cp> [编号]` | `/parkour` | 创建跑酷路线（起点/终点/检查点） | OP |
-| `/pk list` | — | 列出所有跑酷路线 | OP |
-| `/pk tp <名称>` | — | 传送到指定路线起点 | OP |
+设置跑酷点时，准星需对准 5 格内的轻质测重压力板。
 
-> 跑酷路线通过准星对准**轻质测重压力板**并执行指令来设置。
+当前实现没有命令权限检查，普通玩家也能创建路线和使用上述命令。公开服务器使用前应通过外部权限或命令管理机制限制管理操作。
 
-玩家无须任何权限即可参与跑酷。
+## 跑酷流程
 
----
+1. 触发起点压力板后开始计时，并记录原背包内容。
+2. 触发检查点后记录位置，播放音效和粒子效果。
+3. 到达终点后显示总用时、恢复背包，并传送到起点附近。
+4. 玩家退出服务器时结束跑酷并恢复背包。
 
-## 🔧 开发环境
+Action Bar 每秒更新一次，完成时间以毫秒差值计算后显示为秒。开始时会放入羽毛和屏障，但当前没有实现这两个物品的返回检查点或主动退出操作，也没有成绩持久化。
 
-- **Java:** 8+
-- **Build:** Gradle 7.x+
-- **API:** Spigot / Paper API 1.16+
-- **测试服务端:** Spigot / Paper 1.16+
+## 源码
 
----
+- `src/main/java/com/sgly/aojiang/parkourgame/ParkourGame.java`：命令、事件、路线和计时状态。
+- `src/main/resources/plugin.yml`：插件入口与命令别名。
+- `build.gradle`：编译依赖、Java 目标与资源处理。
 
-## 🤝 贡献
+## 反馈与许可
 
-欢迎 Issue / PR！
+问题和改进建议请提交到 [Issues](https://github.com/aojiangQAQ/ParkourGame/issues)。
 
-1. Fork 本仓库
-2. 创建新分支: `git checkout -b feature/awesome`
-3. 提交更改: `git commit -m "Add awesome feature"`
-4. 推送分支: `git push origin feature/awesome`
-5. 发起 Pull Request
-
----
-
-## ⚖️ License
-
-ParkourGame 使用 **MIT License**，详见 [LICENSE](LICENSE)。
+采用 [MIT License](LICENSE)。

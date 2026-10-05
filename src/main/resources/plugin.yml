@@ -1,6 +1,6 @@
 name: ParkourGame
 version: 1.0
-author: SGly
+authors: ['aojiangQAQ（鳌江）', 'SGly']
 main: com.sgly.aojiang.parkourgame.ParkourGame
 api-version: 1.16
 commands:

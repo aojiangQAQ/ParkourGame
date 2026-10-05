@@ -192,7 +192,7 @@ public class ParkourGame extends JavaPlugin implements Listener, CommandExecutor
 
     // 处理重载插件配置的命令
     private void handleReloadCommand(Player player) {
-        // 配置重载逻辑的占位符
+        // 当前版本没有持久化配置，此命令只返回提示。
         player.sendMessage("§a[曙光领域] §f插件配置已重载");
     }
 
@@ -204,7 +204,7 @@ public class ParkourGame extends JavaPlugin implements Listener, CommandExecutor
         player.sendMessage("§b/pk tp <name>§f - 传送到指定跑酷的起点");
         player.sendMessage("§b/pk reload§f - 重载插件配置");
         player.sendMessage("§b/pk help§f - 显示插件命令帮助信息");
-        player.sendMessage("§a作者: aojiangQAQ");
+        player.sendMessage("§a作者: aojiangQAQ（鳌江）");
     }
 
     @EventHandler
